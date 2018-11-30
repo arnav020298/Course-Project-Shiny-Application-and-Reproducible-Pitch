@@ -6,6 +6,8 @@ library(leaflet)
 library(tidyr)
 library(dplyr)
   
+source("add_marker.R")
+  
  
 # Read 2017 Car crash data in Allegheny County.
 #  Data is loaded from :
@@ -100,15 +102,15 @@ leaflet() %>%
   addTiles() %>%  # Add default OpenStreetMap map tiles
     # Add 3 diffrent type of Markers 
     #Fatality group 
-    addMarkers(data=subset(DF.Crahs.subset,DF.Crahs.subset$Fatality.ind == 1),
-               clusterOptions = markerClusterOptions(), icon = FatalCarsIcon)%>%
+    Add_Marker(content = subset(DF.Crahs.subset,DF.Crahs.subset$Fatality.ind == 1),icon = FatalCarsIcon)%>% 
+    
     #Injury Group
-    addMarkers(data=subset(DF.Crahs.subset,(DF.Crahs.subset$Fatality.ind == 0 & DF.Crahs.subset$Injury.ind==1)),
-           clusterOptions = markerClusterOptions(), icon = InjurylCarsIcon)%>% 
+    Add_Marker(content = subset(DF.Crahs.subset,(DF.Crahs.subset$Fatality.ind == 0 & DF.Crahs.subset$Injury.ind==1)),
+            icon = InjurylCarsIcon)%>% 
     
     #No Injury and No Fatality  Group
-    addMarkers(data=subset(DF.Crahs.subset,(DF.Crahs.subset$Fatality.ind == 0 & DF.Crahs.subset$Injury.ind==0)),
-               clusterOptions = markerClusterOptions(), icon = CarsIcon)  
+  Add_Marker(content = subset(DF.Crahs.subset,(DF.Crahs.subset$Fatality.ind == 0 & DF.Crahs.subset$Injury.ind==0)),
+                icon = CarsIcon)  
  
   })
 
