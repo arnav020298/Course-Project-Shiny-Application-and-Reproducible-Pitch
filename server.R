@@ -16,6 +16,9 @@ DF<-read.csv("CarCrash2017.csv")
 #Subset the location of the car crash (Latitude and longtiutiate)
 #In order to show the information on  a Leaflet MAP 
 
+#Subset only the accidents which the number of car involves is
+#higher than zero
+
 #Keep the data about the month of the accident.
 #Create a new column with the month's names instead of a number. 
 #Since there is a large number of the crash 
@@ -35,10 +38,18 @@ dfCrash<-dfCrash %>% drop_na()
 #Create a column with the accident month name (instaed of a number)
 dfCrash<-mutate(dfCrash,Month.Crash.Name=month.name[dfCrash$`Month Crash`])
 
+
+#Subset - remove all accident with zero cars 
+dfCrash <-subset(dfCrash,dfCrash$No.Cars.Involved > 0)
+
+DF.Crahs.subset<-dfCrash
+
 #Calculate the Maximuim amd Minumuim number of cars involved 
 #Send it as output to the UI 
 Max_No_Car <- max(dfCrash$No.Cars.Involved)
 Min_No_Car <- min(dfCrash$No.Cars.Involved)
+CarsIcon <- makeIcon("CarsIcon1.png",iconWidth = 45, iconHeight = 45)
+
 
 #Create the slider for selecting the number of car involved 
 #The slider is a semi dinamic , as the maximuim and minuim values 
@@ -49,12 +60,47 @@ output$slider <- renderUI({
 })
 
 
+#Reactive function to get the Slected month (or all year)
+Month<- reactive({
+  input$Month
+})
+
+
+#Reactive function to get the Slected number of involved cars
+Cars<- reactive({
+  input$slider
+})
+
+
 #Create the MAP 
 output$map <- renderLeaflet({
+
+#Get the Month and slice the Data Frame accordingly 
+Sel.Month<-Month()
+if (Sel.Month == "All")
+    DF.Crahs.subset<-dfCrash
+else
+    DF.Crahs.subset <-subset(dfCrash,dfCrash$`Month.Crash.Name`==Sel.Month)
+
+#Get No of Cars and slice the data frame accordingly 
+Sel.Cars<-Cars()
+DF.Crahs.subset <-subset(DF.Crahs.subset,dfCrash$No.Cars.Involved==Sel.Cars)
+
+#Create the slider for selecting the number of car involved 
+#The slider is a semi dinamic , as the maximuim and minuim values 
+# are based on the data 
+output$slider <- renderUI({
+  sliderInput("slider", "Select Number of Cars involve", min = Min_No_Car,
+              max = Max_No_Car, value = 1,step= 1)
+})
+
+  
+#Build the MAP   
 leaflet() %>%
   addTiles() %>%  # Add default OpenStreetMap map tiles
-  addMarkers(lng=174.768, lat=-36.852, popup="The birthplace of R")
-})
+    addMarkers(data=DF.Crahs.subset,clusterOptions = markerClusterOptions(), icon = CarsIcon)                                                                                                                           
  
   })
+
+})
   
