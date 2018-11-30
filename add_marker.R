@@ -15,6 +15,7 @@ Add_Marker <- function(my_map,content,iconMarker=CarsIcon) {
              clusterOptions = markerClusterOptions(),
              icon = iconMarker,popup = paste("Car involved:", content$No.Cars.Involved ,"<br>",
             "Fatality:",content$Death.Count,"<br>",
+            "Injuries:",content$Injury.Count,"<br>",
             "Drugs Involved :", content$Drug.Involved,"<br>",
           " Alcohol involved:",content$Drinking.Driver))
  

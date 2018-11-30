@@ -109,7 +109,7 @@ leaflet() %>%
             icon = InjurylCarsIcon)%>% 
     
     #No Injury and No Fatality  Group
-  Add_Marker(content = subset(DF.Crahs.subset,(DF.Crahs.subset$Fatality.ind == 0 & DF.Crahs.subset$Injury.ind==0)),
+    Add_Marker(content = subset(DF.Crahs.subset,(DF.Crahs.subset$Fatality.ind == 0 & DF.Crahs.subset$Injury.ind==0)),
                 icon = CarsIcon)  
  
   })
