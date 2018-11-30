@@ -1,5 +1,5 @@
 library(shiny)
-shinyServer(function(input, output) {
+shinyServer(function(input, output,session) {
   
 #Load libraries   
 library(leaflet)
@@ -31,10 +31,12 @@ DF<-read.csv("CarCrash2017.csv")
 #INJURY_COUNT - Number of injuries 
 
 dfCrash<-select(DF,DEC_LAT,DEC_LONG,CRASH_MONTH,AUTOMOBILE_COUNT,DRINKING_DRIVER,
-                FATAL_COUNT,ILLEGAL_DRUG_RELATED,INJURY_COUNT)
-colnames(dfCrash)<-c("latitude","longitude","Month Crash","No.Cars.Involved","Drinking.Driver","Death.Count","Drug.Involved","Injury.Count")
+                FATAL_COUNT,ILLEGAL_DRUG_RELATED,INJURY_COUNT,FATAL,INJURY)
+colnames(dfCrash)<-c("latitude","longitude","Month Crash","No.Cars.Involved","Drinking.Driver",
+                     "Death.Count","Drug.Involved","Injury.Count","Fatality.ind","Injury.ind")
 # Drop all NA columns
 dfCrash<-dfCrash %>% drop_na()
+
 #Create a column with the accident month name (instaed of a number)
 dfCrash<-mutate(dfCrash,Month.Crash.Name=month.name[dfCrash$`Month Crash`])
 
@@ -48,16 +50,14 @@ DF.Crahs.subset<-dfCrash
 #Send it as output to the UI 
 Max_No_Car <- max(dfCrash$No.Cars.Involved)
 Min_No_Car <- min(dfCrash$No.Cars.Involved)
-CarsIcon <- makeIcon("CarsIcon1.png",iconWidth = 45, iconHeight = 45)
 
+#Icons 
+CarsIcon <- makeIcon("CarsIconGreen.png",iconWidth = 45, iconHeight = 45)
+FatalCarsIcon <- makeIcon("CarsIconRed.png",iconWidth = 45, iconHeight = 45)
+InjurylCarsIcon <- makeIcon("CarsIconYellow.png",iconWidth = 45, iconHeight = 45)
 
-#Create the slider for selecting the number of car involved 
-#The slider is a semi dinamic , as the maximuim and minuim values 
-# are based on the data 
-output$slider <- renderUI({
-  sliderInput("slider", "Select Number of Cars involve", min = Min_No_Car,
-              max = Max_No_Car, value = 1,step= 1)
-})
+#Use the Min and Max values to updates the slider input 
+updateSliderInput(session, "slider", max=Max_No_Car,min=Min_No_Car)
 
 
 #Reactive function to get the Slected month (or all year)
@@ -84,7 +84,7 @@ else
 
 #Get No of Cars and slice the data frame accordingly 
 Sel.Cars<-Cars()
-DF.Crahs.subset <-subset(DF.Crahs.subset,dfCrash$No.Cars.Involved==Sel.Cars)
+DF.Crahs.subset <-subset(DF.Crahs.subset,dfCrash$No.Cars.Involved<=Sel.Cars)
 
 #Create the slider for selecting the number of car involved 
 #The slider is a semi dinamic , as the maximuim and minuim values 
@@ -98,7 +98,17 @@ output$slider <- renderUI({
 #Build the MAP   
 leaflet() %>%
   addTiles() %>%  # Add default OpenStreetMap map tiles
-    addMarkers(data=DF.Crahs.subset,clusterOptions = markerClusterOptions(), icon = CarsIcon)                                                                                                                           
+    # Add 3 diffrent type of Markers 
+    #Fatality group 
+    addMarkers(data=subset(DF.Crahs.subset,DF.Crahs.subset$Fatality.ind == 1),
+               clusterOptions = markerClusterOptions(), icon = FatalCarsIcon)%>%
+    #Injury Group
+    addMarkers(data=subset(DF.Crahs.subset,(DF.Crahs.subset$Fatality.ind == 0 & DF.Crahs.subset$Injury.ind==1)),
+           clusterOptions = markerClusterOptions(), icon = InjurylCarsIcon)%>% 
+    
+    #No Injury and No Fatality  Group
+    addMarkers(data=subset(DF.Crahs.subset,(DF.Crahs.subset$Fatality.ind == 0 & DF.Crahs.subset$Injury.ind==0)),
+               clusterOptions = markerClusterOptions(), icon = CarsIcon)  
  
   })
 

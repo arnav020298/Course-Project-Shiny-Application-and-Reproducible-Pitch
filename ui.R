@@ -11,9 +11,15 @@ shinyUI(fluidPage(
         choices = c("All",month.name),
         selected = "All"
       ),
-      #Slider from the server to slice based on number of cars involved
-      uiOutput("slider"),
       
+#Create the slider for selecting the number of car involved 
+#The slider is a semi dinamic , as the maximuim and minuim values 
+# are based on the data 
+      sliderInput("slider", "Select Number of Cars involve (Range)", min = 1,
+                    max = 10, value = 1,step= 1),
+      
+      
+#Submit button - control the changes       
       submitButton("Submit")
       
     ),
