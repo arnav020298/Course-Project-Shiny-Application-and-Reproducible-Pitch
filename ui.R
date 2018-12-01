@@ -16,8 +16,8 @@ shinyUI(fluidPage(
         selected = "All"
       ),
       
-#Create the slider for selecting the number of car involved 
-#The slider is a semi dinamic , as the maximuim and minuim values 
+#Create the slider for selecting the number of cars involved 
+#The slider is a dynamic slider, as the maximum and minuim values 
 # are based on the data 
       sliderInput("slider", "Select Number of Cars involve (Range)", min = 1,
                     max = 10, value = 1,step= 1),
