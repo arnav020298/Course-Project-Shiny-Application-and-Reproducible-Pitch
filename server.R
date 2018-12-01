@@ -115,5 +115,12 @@ addMarkers(icon = ~CrashIcons[Death_Injuries],clusterOptions = markerClusterOpti
  
   })
 
+
+
+
+  
+  
+
+
 })
   

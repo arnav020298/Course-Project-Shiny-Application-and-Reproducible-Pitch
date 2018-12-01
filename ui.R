@@ -36,6 +36,8 @@ shinyUI(fluidPage(
 ),
 tabPanel("Help", fluid = TRUE,
          
-         titlePanel("Application Documentation")
+         tags$img(src='Help.png',width="700px",height="700px")
+
+         
 ))))
 
