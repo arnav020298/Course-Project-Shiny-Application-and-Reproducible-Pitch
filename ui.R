@@ -1,6 +1,10 @@
 library(leaflet)
 library(shiny)
 shinyUI(fluidPage(
+  
+  tabsetPanel(
+    tabPanel("MapApp", fluid = TRUE,
+  
   titlePanel("2017 Car crash data in Allegheny County"),
   sidebarLayout(
     sidebarPanel(
@@ -29,4 +33,9 @@ shinyUI(fluidPage(
       leafletOutput("map", width = "90%", height = "700px")
     )
   )
-))
+),
+tabPanel("Help", fluid = TRUE,
+         
+         titlePanel("Application Documentation")
+))))
+

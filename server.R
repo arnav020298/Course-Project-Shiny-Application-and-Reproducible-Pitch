@@ -45,18 +45,29 @@ dfCrash<-mutate(dfCrash,Month.Crash.Name=month.name[dfCrash$`Month Crash`])
 
 #Subset - remove all accident with zero cars 
 dfCrash <-subset(dfCrash,dfCrash$No.Cars.Involved > 0)
+DF.Crash.subset<-dfCrash
 
-DF.Crahs.subset<-dfCrash
-
+#Create a Factor column to indicata Fatality , Injuries or no Fatalites or injuries 
+dfCrash = mutate(dfCrash,Death_Injuries = ifelse(dfCrash$Fatality.ind == 1,"Death",
+                               ifelse(dfCrash$Fatality.ind == 0 & dfCrash$Injury.ind==1,"Injury",
+                                      ifelse(dfCrash$Fatality.ind == 0 & dfCrash$Injury.ind==0,"None","None"))))
+                                              
+dfCrash$Death_Injuries<-as.factor(dfCrash$Death_Injuries)
 #Calculate the Maximuim amd Minumuim number of cars involved 
 #Send it as output to the UI 
 Max_No_Car <- max(dfCrash$No.Cars.Involved)
 Min_No_Car <- min(dfCrash$No.Cars.Involved)
 
-#Icons 
-CarsIcon <- makeIcon("CarsIconGreen.png",iconWidth = 45, iconHeight = 45)
-FatalCarsIcon <- makeIcon("CarsIconRed.png",iconWidth = 45, iconHeight = 45)
-InjurylCarsIcon <- makeIcon("CarsIconYellow.png",iconWidth = 45, iconHeight = 45)
+DF.Crash.subset<-dfCrash
+
+
+
+#icins list 
+CrashIcons <- iconList(
+  None = makeIcon("CarsIconGreen.png",iconWidth = 45, iconHeight = 45),
+  Death = makeIcon("CarsIconRed.png",iconWidth = 45, iconHeight = 45),
+  Injury = makeIcon("CarsIconYellow.png",iconWidth = 45, iconHeight = 45)
+)
 
 #Use the Min and Max values to updates the slider input 
 updateSliderInput(session, "slider", max=Max_No_Car,min=Min_No_Car)
@@ -80,37 +91,29 @@ output$map <- renderLeaflet({
 #Get the Month and slice the Data Frame accordingly 
 Sel.Month<-Month()
 if (Sel.Month == "All")
-    DF.Crahs.subset<-dfCrash
+    DF.Crash.subset<-dfCrash
 else
-    DF.Crahs.subset <-subset(dfCrash,dfCrash$`Month.Crash.Name`==Sel.Month)
+    DF.Crash.subset <-subset(dfCrash,dfCrash$Month.Crash.Name==Sel.Month)
 
 #Get No of Cars and slice the data frame accordingly 
 Sel.Cars<-Cars()
-DF.Crahs.subset <-subset(DF.Crahs.subset,dfCrash$No.Cars.Involved<=Sel.Cars)
+ DF.Crash.subset <-subset(DF.Crash.subset,DF.Crash.subset$No.Cars.Involved<=Sel.Cars)
 
-#Create the slider for selecting the number of car involved 
-#The slider is a semi dinamic , as the maximuim and minuim values 
-# are based on the data 
-output$slider <- renderUI({
-  sliderInput("slider", "Select Number of Cars involve", min = Min_No_Car,
-              max = Max_No_Car, value = 1,step= 1)
-})
+
 
   
 #Build the MAP   
-leaflet() %>%
-  addTiles() %>%  # Add default OpenStreetMap map tiles
-    # Add 3 diffrent type of Markers 
-    #Fatality group 
-    Add_Marker(content = subset(DF.Crahs.subset,DF.Crahs.subset$Fatality.ind == 1),icon = FatalCarsIcon)%>% 
-    
-    #Injury Group
-    Add_Marker(content = subset(DF.Crahs.subset,(DF.Crahs.subset$Fatality.ind == 0 & DF.Crahs.subset$Injury.ind==1)),
-            icon = InjurylCarsIcon)%>% 
-    
-    #No Injury and No Fatality  Group
-    Add_Marker(content = subset(DF.Crahs.subset,(DF.Crahs.subset$Fatality.ind == 0 & DF.Crahs.subset$Injury.ind==0)),
-                icon = CarsIcon)  
+leaflet(DF.Crash.subset) %>%
+  addTiles()%>%  # Add default OpenStreetMap map tiles
+addMarkers(icon = ~CrashIcons[Death_Injuries],clusterOptions = markerClusterOptions(),
+           popup = paste("Car involved:", DF.Crash.subset$No.Cars.Involved ,"<br>",
+                         "Fatality:",DF.Crash.subset$Death.Count,"<br>",
+                         "Injuries:",DF.Crash.subset$Injury.Count,"<br>",
+                         "Drugs Involved :", DF.Crash.subset$Drug.Involved,"<br>",
+                         " Alcohol involved:",DF.Crash.subset$Drinking.Driver))
+
+
+
  
   })
 
