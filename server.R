@@ -6,9 +6,7 @@ library(leaflet)
 library(tidyr)
 library(dplyr)
   
-source("add_marker.R")
-  
- 
+
 # Read 2017 Car crash data in Allegheny County.
 #  Data is loaded from :
 #    https://data.wprdc.org/datastore/dump/bf8b3c7e-8d60-40df-9134-21606a451c1a
