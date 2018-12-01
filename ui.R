@@ -1,6 +1,6 @@
 library(leaflet)
 library(shiny)
-shinyUI(fluidPage(
+shinyUI(fluidPage( 
   
   tabsetPanel(
     tabPanel("MapApp", fluid = TRUE,

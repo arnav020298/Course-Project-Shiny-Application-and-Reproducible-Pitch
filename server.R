@@ -11,7 +11,7 @@ library(dplyr)
 #  Data is loaded from :
 #    https://data.wprdc.org/datastore/dump/bf8b3c7e-8d60-40df-9134-21606a451c1a
  
-DF<-read.csv("CarCrash2017.csv")
+DF<-read.csv("CarCrash2017.csv") 
 
 #Subset the location of the car crash (Latitude and longtiutiate)
 # To show the information on  a Leaflet MAP 
