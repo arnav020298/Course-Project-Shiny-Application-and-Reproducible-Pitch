@@ -35,7 +35,7 @@ NOTE: Slidify is no longer compatible with with Rpubs. If you choose to use Slid
 
 Notice to publish your slidify presentation to github or Rpubs, there's the publish command. This link outlines how to do it (it's one line).
 
-About the Project 
+# About the Project 
 
 This Application uses data about car's accidents in Allegheny County in the US, To demonstrate various capabilities from the Developing Data Products Course.
 The Application provides visualization about car accidents in Allegheny County in 2017.
